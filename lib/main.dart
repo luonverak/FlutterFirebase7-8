@@ -1,3 +1,4 @@
+import 'package:firebase7_8/auth/controller/auth_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +18,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: LoadinScreen(),
+    );
+  }
+}
+
+class LoadinScreen extends StatelessWidget {
+  LoadinScreen({super.key});
+  final authController = Get.put(AuthController());
+  RxBool loading = true.obs;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Obx(
+        () => Visibility(
+          visible: loading.value,
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      ),
     );
   }
 }

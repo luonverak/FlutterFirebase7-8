@@ -17,7 +17,7 @@ class InputField extends StatelessWidget {
   var hintText;
   var maxLines;
   var controller = TextEditingController();
-  bool? obscureText = false;
+  bool? obscureText;
   @override
   Widget build(BuildContext context) {
     return Container(
