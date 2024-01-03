@@ -10,6 +10,7 @@ class InputField extends StatelessWidget {
     required this.controller,
     this.suffixIcon,
     this.obscureText,
+    this.height = 60,
   });
   double? border;
   Icon? prefixIcon;
@@ -18,11 +19,12 @@ class InputField extends StatelessWidget {
   var maxLines;
   var controller = TextEditingController();
   bool? obscureText;
+  double? height;
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 60,
+      height: height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(border!),
         border: Border.all(width: 2, color: Colors.blue),
