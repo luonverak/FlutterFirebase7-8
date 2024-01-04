@@ -11,6 +11,7 @@ class StorageController extends GetxController {
     try {
       final fileChoose =
           await ImagePicker().pickImage(source: ImageSource.gallery);
+
       file = XFile(fileChoose!.path);
     } on Exception catch (e) {
       print(e);
