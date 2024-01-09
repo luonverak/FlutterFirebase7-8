@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:firebase7_8/home/controller/product_controller.dart';
 import 'package:firebase7_8/home/controller/storage_controller.dart';
+import 'package:firebase7_8/home/model/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +17,7 @@ class AddEditScreen extends StatelessWidget {
   final price = TextEditingController();
   final description = TextEditingController();
   final storageController = Get.put(StorageController());
-  final productController = Get.to(ProductController());
+  final productController = Get.put(ProductController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +28,15 @@ class AddEditScreen extends StatelessWidget {
             onPressed: () async {
               await storageController
                   .uploadFile(XFile(storageController.file!.path));
+              await productController.addProduct(
+                ProductModel(
+                  id: Random().nextInt(10000),
+                  name: name.text,
+                  price: double.parse(price.text),
+                  description: description.text,
+                  image: storageController.imageDownload.value,
+                ),
+              );
             },
             icon: const Icon(Icons.save),
           )
