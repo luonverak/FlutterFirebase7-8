@@ -11,4 +11,21 @@ class ProductController extends GetxController {
         .then((value) => print(" Added"))
         .catchError((error) => print("Failed : $error"));
   }
+
+  Future<void> deleteProduct({required String doscId}) {
+    return product
+        .doc(doscId)
+        .delete()
+        .then((value) => print(" Deleted"))
+        .catchError((error) => print("Failed : $error"));
+  }
+
+  Future<void> updateProduct(
+      {required String doscId, required ProductModel model}) {
+    return product
+        .doc(doscId)
+        .update(model.fromJSon())
+        .then((value) => print(" Updated"))
+        .catchError((error) => print("Failed  $error"));
+  }
 }

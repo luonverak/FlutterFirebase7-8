@@ -12,17 +12,29 @@ import 'package:image_picker/image_picker.dart';
 import '../../widget/input_field.dart';
 
 class AddEditScreen extends StatelessWidget {
-  AddEditScreen({super.key});
+  AddEditScreen({super.key, this.model, this.docId});
+  late ProductModel? model;
+  late String? docId;
   final name = TextEditingController();
   final price = TextEditingController();
   final description = TextEditingController();
   final storageController = Get.put(StorageController());
   final productController = Get.put(ProductController());
+  late String image = '';
+  reloadData() {
+    name.text = model!.name;
+    price.text = model!.price.toString();
+    description.text = model!.description;
+    image = model!.image;
+  }
+
+  RxBool check = false.obs;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add product'),
+        title: Text(model == null ? 'Add product' : 'Edit product'),
         actions: [
           IconButton(
             onPressed: () async {
@@ -45,100 +57,107 @@ class AddEditScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
+          child: Obx(
+            () => Visibility(
+              visible: check.value,
+              replacement: Column(
                 children: [
-                  GetBuilder<StorageController>(
-                    init: StorageController(),
-                    builder: (controller) => Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.red,
-                        image: storageController.file == null
-                            ? const DecorationImage(
-                                fit: BoxFit.cover,
-                                image: AssetImage(
-                                    'asset/image/shopping_illustration-copy.jpg'),
-                              )
-                            : DecorationImage(
-                                fit: BoxFit.cover,
-                                image: FileImage(
-                                  File(storageController.file!.path),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 20,
-                    right: 15,
-                    child: GestureDetector(
-                      onTap: () async {
-                        showAdaptiveActionSheet(
-                          context: context,
-                          actions: <BottomSheetAction>[
-                            BottomSheetAction(
-                                title: const Text('From Gallery'),
-                                onPressed: (context) async {
-                                  await storageController
-                                      .openGallery()
-                                      .whenComplete(() => Get.back());
-                                }),
-                            BottomSheetAction(
-                                title: const Text('Open Camera'),
-                                onPressed: (context) {}),
-                          ],
-                          cancelAction: CancelAction(
-                            title: const Text('Cancel'),
+                  Stack(
+                    children: [
+                      GetBuilder<StorageController>(
+                        init:
+                            model == null ? StorageController() : reloadData(),
+                        builder: (controller) => Container(
+                          width: 200,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: Colors.red,
+                            image: storageController.file == null
+                                ? const DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage(
+                                        'asset/image/shopping_illustration-copy.jpg'),
+                                  )
+                                : DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: FileImage(
+                                      File(storageController.file!.path),
+                                    ),
+                                  ),
                           ),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          color: const Color.fromARGB(255, 191, 191, 191),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: Icon(Icons.camera_alt),
                         ),
                       ),
-                    ),
+                      Positioned(
+                        bottom: 20,
+                        right: 15,
+                        child: GestureDetector(
+                          onTap: () async {
+                            showAdaptiveActionSheet(
+                              context: context,
+                              actions: <BottomSheetAction>[
+                                BottomSheetAction(
+                                    title: const Text('From Gallery'),
+                                    onPressed: (context) async {
+                                      await storageController
+                                          .openGallery()
+                                          .whenComplete(() => Get.back());
+                                    }),
+                                BottomSheetAction(
+                                    title: const Text('Open Camera'),
+                                    onPressed: (context) {}),
+                              ],
+                              cancelAction: CancelAction(
+                                title: const Text('Cancel'),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: const Color.fromARGB(255, 191, 191, 191),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(4.0),
+                              child: Icon(Icons.camera_alt),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  InputField(
+                    controller: name,
+                    hintText: 'Enter product name',
+                    obscureText: false,
+                    border: 5,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  InputField(
+                    controller: price,
+                    hintText: 'Enter product price',
+                    obscureText: false,
+                    border: 5,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  InputField(
+                    controller: description,
+                    hintText: 'Enter product description',
+                    obscureText: false,
+                    border: 5,
+                    height: 150,
                   )
                 ],
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              InputField(
-                controller: name,
-                hintText: 'Enter product name',
-                obscureText: false,
-                border: 5,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              InputField(
-                controller: price,
-                hintText: 'Enter product price',
-                obscureText: false,
-                border: 5,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              InputField(
-                controller: description,
-                hintText: 'Enter product description',
-                obscureText: false,
-                border: 5,
-                height: 150,
-              )
-            ],
+              child: const Center(child: CircularProgressIndicator()),
+            ),
           ),
         ),
       ),
