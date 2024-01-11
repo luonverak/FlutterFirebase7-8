@@ -22,10 +22,10 @@ class AddEditScreen extends StatelessWidget {
   final productController = Get.put(ProductController());
   late String image = '';
   reloadData() {
-    name.text = model!.name;
+    name.text = model!.name.toString();
     price.text = model!.price.toString();
-    description.text = model!.description;
-    image = model!.image;
+    description.text = model!.description.toString();
+    image = model!.image.toString();
   }
 
   RxBool check = false.obs;
@@ -40,15 +40,28 @@ class AddEditScreen extends StatelessWidget {
             onPressed: () async {
               await storageController
                   .uploadFile(XFile(storageController.file!.path));
-              await productController.addProduct(
-                ProductModel(
-                  id: Random().nextInt(10000),
-                  name: name.text,
-                  price: double.parse(price.text),
-                  description: description.text,
-                  image: storageController.imageDownload.value,
-                ),
-              );
+              model == null
+                  ? await productController.addProduct(
+                      ProductModel(
+                        id: Random().nextInt(10000),
+                        name: name.text,
+                        price: double.parse(price.text),
+                        description: description.text,
+                        image: storageController.imageDownload.value,
+                      ),
+                    )
+                  : await productController.updateProduct(
+                      doscId: docId.toString(),
+                      model: ProductModel(
+                        id: model!.id,
+                        name: name.text,
+                        price: double.parse(price.text),
+                        description: description.text,
+                        image: storageController.file == null
+                            ? model!.image
+                            : storageController.imageDownload.value,
+                      ),
+                    );
             },
             icon: const Icon(Icons.save),
           )
@@ -67,26 +80,44 @@ class AddEditScreen extends StatelessWidget {
                       GetBuilder<StorageController>(
                         init:
                             model == null ? StorageController() : reloadData(),
-                        builder: (controller) => Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            color: Colors.red,
-                            image: storageController.file == null
-                                ? const DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: AssetImage(
-                                        'asset/image/shopping_illustration-copy.jpg'),
-                                  )
-                                : DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: FileImage(
-                                      File(storageController.file!.path),
-                                    ),
-                                  ),
-                          ),
-                        ),
+                        builder: (controller) => model == null
+                            ? Container(
+                                width: 200,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: Colors.red,
+                                  image: storageController.file == null
+                                      ? const DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage(
+                                              'asset/image/shopping_illustration-copy.jpg'),
+                                        )
+                                      : DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: FileImage(
+                                            File(storageController.file!.path),
+                                          ),
+                                        ),
+                                ),
+                              )
+                            : Container(
+                                width: 200,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  image: storageController.file == null
+                                      ? DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(image),
+                                        )
+                                      : DecorationImage(
+                                          image: FileImage(
+                                            File(storageController.file!.path),
+                                          ),
+                                        ),
+                                ),
+                              ),
                       ),
                       Positioned(
                         bottom: 20,

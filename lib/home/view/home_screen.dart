@@ -63,6 +63,7 @@ class HomeScreen extends StatelessWidget {
                                     description: item.get('description'),
                                     image: item.get('image'),
                                   ),
+                                  docId: item.id,
                                 ),
                               );
                             },
